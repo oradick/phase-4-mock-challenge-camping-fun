@@ -1,4 +1,5 @@
 class CampersController < ApplicationController
+# rescue from: ActiveRecord::
 
     def index
         campers = Camper.all
@@ -7,11 +8,32 @@ class CampersController < ApplicationController
 
     def show
         camper = Camper.find_by(id: params[:id])
-        render json:camper, status: :ok
+        if camper
+            render json:camper, serializer: CamperWithActivitiesSerializer,  status: :ok
+        else
+            render json: {error: "Camper not found" }, status: :not_found
+        end
     end
 
     def create
-        camper = Camper.create(name: params[:name], age: params[:age])
-        render json:camper, status: :created
+        camper = Camper.create(camper_params)
+        if camper.valid?
+            render json: camper, status: :created
+        else
+            render json: {"errors": ["validation errors"]}, status: :unprocessable_entity
+        end
     end
+
+     
+
+    private
+    
+    def camper_params
+        params.permit(:name, :age)
+    end
+
+    # def render_unprocessable_entity(invalid)
+    #     render json: { errors : invalid. record.errors.full_messages }, status: :unprocessable_entity
+    # end
+
 end
