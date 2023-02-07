@@ -6,10 +6,20 @@ class ActivitiesController < ApplicationController
 
     def destroy
         activity = Activity.find_by(id: params[:id])
-        # if activity.valid?
+        
+        if activity
             activity = activity.destroy
-        # else
-        #     activity.errors.add({"error" => "Activity not found"})
-        # end
+        else
+            render json: {error: "Activity not found"}, status: :not_found
+
+            #OR
+            # render_not_found
+        end
     end
+
+    private
+
+    # def render_not_found
+    # render json: {error: "Activity not found"}, status: :not_found
+    # end
 end
